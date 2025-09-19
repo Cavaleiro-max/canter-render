@@ -329,5 +329,19 @@ def list_uploads():
 def health_check():
     return jsonify({"status": "ok", "message": "API está viva"}), 200
 
+@app.route("/api/generate", methods=["POST"])
+def gerar_resposta():
+    data = request.get_json(force=True)
+    prompt = data.get("prompt", "")
+    if not prompt:
+        return jsonify({"error": "Prompt vazio"}), 400
+
+    try:
+        resposta = call_ollama_stream(prompt)
+        return jsonify({"response": resposta}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
