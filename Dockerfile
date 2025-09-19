@@ -1,10 +1,4 @@
-# Etapa 1: Builder com Ollama
-FROM ollama/ollama:latest as builder
-
-# Baixar modelos
-RUN bash -c "ollama serve & sleep 10 && ollama pull openchat && ollama pull llama3:8b"
-
-# Etapa 2: API Flask com modelos embutidos
+# Etapa única: API Flask com modelos Ollama embutidos
 FROM python:3.11-slim
 
 # Instalar dependências do sistema
@@ -18,10 +12,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
 
-# Copiar os modelos do Ollama
-COPY --from=builder /root/.ollama /root/.ollama
+# Instalar Ollama
+RUN curl -fsSL https://ollama.com/install.sh | bash
 
-# Diretório de trabalho
+# Copiar modelos pré-baixados
+COPY .ollama /root/.ollama
+
+# Definir diretório de trabalho
 WORKDIR /app
 
 # Copiar arquivos do projeto
@@ -35,4 +32,3 @@ EXPOSE 5000
 
 # Rodar a API Flask com eventlet
 CMD ["python", "app.py"]
-
