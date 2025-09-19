@@ -1,0 +1,10 @@
+flask
+flask-socketio
+requests
+reportlab
+python-docx
+openpyxl
+pillow
+werkzeug
+eventlet
+flask-cors
